@@ -5,25 +5,30 @@ var bot = new Telegraf('1883678744:AAHl333qKEXRQNCXe4qjrpaHu1YLKJubvGM');
 
 var start = true
 var critic = false
+var name = ''
 
 // Main welcoming message (/start)
 var welcomeMessage = `
 Halo! Selamat datang di MyMoney. 
-Ada yang dapat MyMoney bantu?
+Dengan siapa kami chattan?
 `
 
 // Main menu
-var menuMessage = `
-Silahkan pilih informasi yang Anda butuhkan.
-`
+var menuMessage = (newName) => {
+    name = newName
+    return `Hai ${name}, Ada yang bisa dibantu?`
+}
 
 var mainMenuInline = {
     inline_keyboard: [
         [
-            {text: 'Tentang Kami', callback_data: 'tentang'}
+            {text: 'Tentang MyMoney', callback_data: 'tentang'}
         ],
         [
-            {text: 'Mitra Kami', callback_data: 'mitra'}
+            {text: 'Fitur MyMoney', callback_data: 'mitra'}
+        ],
+        [
+            {text: 'Kendala MyMoney', callback_data: 'keluar'}
         ],
     ]
 }
@@ -32,9 +37,7 @@ var mainMenuInline = {
 var startFuncion = ctx => {
     start = true
     critic = false
-    ctx.reply(welcomeMessage, {
-        reply_markup: mainMenuInline
-    })
+    ctx.reply(welcomeMessage)
 }
 
 bot.start(startFuncion)
@@ -105,14 +108,14 @@ bot.hears((/hai|hi|hello|woi|halo|hei|woey|hey/i), ctx => {
 })
 
 // If user wants to quit, they are required to give critiques and suggestions
-var critiqueMessage = `
+var keluarMessage = `
 Terima kasih sudah mengunjungi chatbot MyMoney. 
 Silakan berikan kritik & saran Anda kepada kami agar lebih baik.
 `
 
-bot.command('keluar', ctx => {
+var keluarFunction = ctx => {
     critic = true
-    bot.telegram.sendMessage(ctx.chat.id, critiqueMessage, {
+    bot.telegram.sendMessage(ctx.chat.id, keluarMessage, {
         reply_markup: {
             inline_keyboard: [
                 [
@@ -124,7 +127,10 @@ bot.command('keluar', ctx => {
             ]
         }
     })
-})
+}
+
+bot.action('keluar', keluarFunction)
+bot.command('keluar', keluarFunction)
 
 var restartInline = {
     inline_keyboard: [
@@ -158,10 +164,11 @@ Jangan lupa jaga kesehatan, ya!
 
 Sampai ketemu lagi :)
 `
+
 bot.on('text', ctx => {
     if (start) {
         start = false
-        bot.telegram.sendMessage(ctx.chat.id, menuMessage, {
+        bot.telegram.sendMessage(ctx.chat.id, menuMessage(ctx.message.text), {
             reply_markup: mainMenuInline
         })
     }
