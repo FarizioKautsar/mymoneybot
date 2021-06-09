@@ -3,6 +3,7 @@ var {Telegraf} = require('telegraf')
 // Insert Telegram bot Token here
 var bot = new Telegraf('1883678744:AAHl333qKEXRQNCXe4qjrpaHu1YLKJubvGM');
 
+var start = true
 var critic = false
 
 // Main welcoming message (/start)
@@ -14,13 +15,6 @@ Ada yang dapat MyMoney bantu?
 // Main menu
 var menuMessage = `
 Silahkan pilih informasi yang Anda butuhkan.
-
-Ketik:
-/tentang - Informasi mengenai MyMoney
-/mitra - Informasi mengenai mitra MyMoney
-/keluar - Jika ingin keluar dari sesi bot
-
-Atau Anda bisa memilih dari tombol dibawah ini.
 `
 
 var mainMenuInline = {
@@ -36,6 +30,7 @@ var mainMenuInline = {
 
 // Starting reply (/start)
 var startFuncion = ctx => {
+    start = true
     critic = false
     ctx.reply(welcomeMessage, {
         reply_markup: mainMenuInline
@@ -58,8 +53,6 @@ bot.action('menu', menuFunction)
 // Konsultasi menu (/konsultasi)
 var tentangMessage = `
 MyMoney adalah startup yang menyediakan atau memfasilitasi penggunanya dengan fitur-fitur seperti (M)on(E)y, E-Payment, dan juga Chatbot.
-
-/menu - Kembali ke menu utama
 `
 
 var tentangFunction = ctx => {
@@ -79,9 +72,7 @@ bot.action('tentang', tentangFunction)
 
 // Daftar sebagai konsultan
 var mitraMessage = `
-MyMoney bekerja sama dengan Vokasi Universitas Indonesia dan OJK.
-
-/menu - Kembali ke menu utama
+MyMoney bekerja sama dengan Univesitas Indonesia, Vokasi Universitas Indonesia dan OJK.
 `
 
 var mitraFunction = ctx => {
@@ -105,12 +96,6 @@ Halo! Selamat datang di MyMoney.
 Ada yang dapat MyMoney bantu?
 
 Silahkan pilih informasi yang Anda butuhkan.
-
-Ketik:
-/tentang - Informasi mengenai MyMoney
-/mitra - Informasi mengenai mitra MyMoney
-
-Atau Anda bisa memilih dari tombol dibawah ini.
 `
 
 bot.hears((/hai|hi|hello|woi|halo|hei|woey|hey/i), ctx => {
@@ -165,12 +150,6 @@ bot.action('finish', ctx => {
 var errorMessage = `
 Mohon maaf, kami tidak mengerti perintah Anda.
 Silahkan pilih informasi yang Anda butuhkan.
-
-Ketik:
-/tentang - Informasi mengenai MyMoney
-/mitra - Informasi mengenai mitra MyMoney
-
-Atau Anda bisa memilih dari tombol dibawah ini.
 `
 
 var quitMessage = `
@@ -180,16 +159,24 @@ Jangan lupa jaga kesehatan, ya!
 Sampai ketemu lagi :)
 `
 bot.on('text', ctx => {
-    if (critic) {
-        critic = false
-        ctx.reply(quitMessage, {
-            reply_markup: restartInline
+    if (start) {
+        start = false
+        bot.telegram.sendMessage(ctx.chat.id, menuMessage, {
+            reply_markup: mainMenuInline
         })
     }
     else {
-        bot.telegram.sendMessage(ctx.chat.id, errorMessage, {
-            reply_markup: mainMenuInline
-        })
+        if (critic) {
+            critic = false
+            ctx.reply(quitMessage, {
+                reply_markup: restartInline
+            })
+        }
+        else {
+            bot.telegram.sendMessage(ctx.chat.id, errorMessage, {
+                reply_markup: mainMenuInline
+            })
+        }
     }
 })
 
