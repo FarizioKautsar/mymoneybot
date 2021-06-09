@@ -18,6 +18,7 @@ Silahkan pilih informasi yang Anda butuhkan.
 Ketik:
 /tentang - Informasi mengenai MyMoney
 /mitra - Informasi mengenai mitra MyMoney
+/keluar - Jika ingin keluar dari sesi bot
 
 Atau Anda bisa memilih dari tombol dibawah ini.
 `
@@ -34,11 +35,15 @@ var mainMenuInline = {
 }
 
 // Starting reply (/start)
-bot.start(ctx => {
-    bot.telegram.sendMessage(ctx.chat.id, welcomeMessage, {
+var startFuncion = ctx => {
+    critic = false
+    ctx.reply(welcomeMessage, {
         reply_markup: mainMenuInline
     })
-})
+}
+
+bot.start(startFuncion)
+bot.action('start', startFuncion)
 
 var menuFunction = ctx => {
     critic = false
@@ -52,12 +57,12 @@ bot.action('menu', menuFunction)
 
 // Konsultasi menu (/konsultasi)
 var tentangMessage = `
-MyMoney adalah startup blabla
+MyMoney adalah startup yang menyediakan atau memfasilitasi penggunanya dengan fitur-fitur seperti (M)on(E)y, E-Payment, dan juga Chatbot.
 
 /menu - Kembali ke menu utama
 `
 
-var konsultasiFunction = ctx => {
+var tentangFunction = ctx => {
     bot.telegram.sendMessage(ctx.chat.id, tentangMessage, {
         reply_markup: {
             inline_keyboard: [
@@ -69,12 +74,12 @@ var konsultasiFunction = ctx => {
     })
 }
 
-bot.command('konsultasi', konsultasiFunction)
-bot.action('konsultasi', konsultasiFunction)
+bot.command('tentang', tentangFunction)
+bot.action('tentang', tentangFunction)
 
 // Daftar sebagai konsultan
 var mitraMessage = `
-MyMoney bekerja sama dengan 
+MyMoney bekerja sama dengan Vokasi Universitas Indonesia dan OJK.
 
 /menu - Kembali ke menu utama
 `
@@ -120,16 +125,39 @@ Terima kasih sudah mengunjungi chatbot MyMoney.
 Silakan berikan kritik & saran Anda kepada kami agar lebih baik.
 `
 
-bot.command('quit', ctx => {
+bot.command('keluar', ctx => {
     critic = true
-    ctx.reply(critiqueMessage, {
+    bot.telegram.sendMessage(ctx.chat.id, critiqueMessage, {
         reply_markup: {
             inline_keyboard: [
                 [
-                    {text: 'Kembali', callback_data: 'menu'}
+                    {text: 'Lewati', callback_data: 'finish'}
+                ],
+                [
+                    {text: 'Kembali', callback_data: 'start'}
                 ],
             ]
         }
+    })
+})
+
+var restartInline = {
+    inline_keyboard: [
+        [
+            {text: 'Mulai Kembali', callback_data: 'start' }
+        ]
+    ]
+}
+
+var finishMessage = `
+Terima kasih sudah menggunakan MyMoney!
+Jangan lupa jaga kesehatan, ya!
+
+Sampai ketemu lagi :)
+`
+bot.action('finish', ctx => {
+    ctx.reply(finishMessage, {
+        reply_markup: restartInline
     })
 })
 
@@ -153,8 +181,10 @@ Sampai ketemu lagi :)
 `
 bot.on('text', ctx => {
     if (critic) {
-        ctx.reply(quitMessage)
-        ctx.leaveChat()
+        critic = false
+        ctx.reply(quitMessage, {
+            reply_markup: restartInline
+        })
     }
     else {
         bot.telegram.sendMessage(ctx.chat.id, errorMessage, {
@@ -163,4 +193,8 @@ bot.on('text', ctx => {
     }
 })
 
+bot.launch()
 console.log('Bot Launched!')
+
+process.once('SIGINT', () => bot.stop('SIGINT'))
+process.once('SIGTERM', () => bot.stop('SIGTERM'))
