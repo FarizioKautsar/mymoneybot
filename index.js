@@ -198,3 +198,4 @@ bot.action('kendala', kendalaFunction)
 bot.command('kendala', kendalaFunction)
 
 bot.launch()
+console.log('Bot Launched!')
