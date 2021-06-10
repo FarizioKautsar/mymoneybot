@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.1",
     "ioredis": "^4.27.5",
     "telegraf": "^4.3.0"
   },

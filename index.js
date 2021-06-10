@@ -3,8 +3,10 @@ var {Telegraf} = require('telegraf')
 var bot = new Telegraf('1883678744:AAHl333qKEXRQNCXe4qjrpaHu1YLKJubvGM');
 // var session = require('telegraf/session');
 
+var express = require('express')
+var app = express()
+
 var start = true
-var name = ''
 
 // ============================ Starting messages ============================
 var startMessage = name => {
@@ -198,3 +200,12 @@ bot.action('kendala', kendalaFunction)
 bot.command('kendala', kendalaFunction)
 
 bot.launch()
+
+app.get('/', (req, res) => {
+    res.send('Bot has been launched!')
+})
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`);
+});
