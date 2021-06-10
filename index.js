@@ -185,7 +185,7 @@ bot.command('personale', personaleFunction)
 
 // ============================ Kendala MyMoney ============================
 var kendalaMessage = `
-Anda bisa mengadukan kendala dengan mengirimkan email ke my.moneyyyy@gmail.com
+Anda bisa mengadukan kendala dengan mengirimkan email ke my.moneyyyy@gmail.com.
 `
 
 var kendalaFunction = ctx => {
