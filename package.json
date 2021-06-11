@@ -5,8 +5,8 @@
   "main": "chatbot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "node chatbot",
+    "dev": "nodemon chatbot"
   },
   "author": "",
   "license": "ISC",
