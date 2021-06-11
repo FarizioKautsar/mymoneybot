@@ -207,6 +207,11 @@ bot.on('text', ctx => {
 
 bot.launch()
 
+// OPTIONAL URL HANDLER
+// Express and this is only used to handle Heroku's limited dyno hours
+// If an app isn't used for sometimes, Heroku will put it to sleep mode to conserve dyno hours
+// Visiting mymoneybot.herokuapp.com will "wake it up" so the chatbot can be active again
+// This is only a handler whenever you visit mymoneybot.herokuapp.com
 app.get('/', (req, res) => {
     res.send('Bot has been launched!')
 })
