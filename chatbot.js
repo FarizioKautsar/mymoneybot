@@ -31,7 +31,7 @@ var mainMenuInline = {
 }
 
 var startFunction = ctx => {
-    console.log(ctx.message)
+    start = true
     ctx.reply(startMessage(ctx.message.from.first_name), {
         reply_markup: mainMenuInline
     })
@@ -39,6 +39,7 @@ var startFunction = ctx => {
 
 bot.start(startFunction)
 
+// ============================ Main menu ============================
 var menuMessage = name => {
     if (name) {
         return `Hai ${name}, ada yang bisa kami bantu?`
@@ -47,27 +48,9 @@ var menuMessage = name => {
     }
 }
 
-var errorMessage = `
-Mohon maaf, kami tidak mengerti perintah Anda.
-Silahkan pilih informasi yang Anda butuhkan.
-`
-
-bot.on('text', ctx => {
-    if (start) {
-        start = false
-        ctx.reply(menuMessage(ctx.message.from.first_name), {
-            reply_markup: mainMenuInline
-        })
-    }
-    else {
-        ctx.reply(errorMessage, {
-            reply_markup: mainMenuInline
-        })
-    }
-})
-
 var menuFunction = ctx => {
-    // console.log(ctx.message)
+    // Name cannot be saved unless with the help of now deprecated Telegraf session
+    // So we can just pass null
     ctx.reply(menuMessage(null), {
         reply_markup: mainMenuInline
     })
@@ -86,10 +69,10 @@ var backInline = {
 
 // ============================ Tutorial Website ============================
 var tutorialMessage = `
-1. Membuat akun dengan menekan tombol LOGIN, kemudian slide halaman ke bawah
+1. Membuat akun dengan menekan tombol LOGIN, kemudian scroll halaman ke bawah
 2. Isi data sesuai dengan yang dibutuhkan di Website
 3. Data sudah terdaftar, kemudia login username dan password
-4. Website sudah bisa digunakan☺️
+4. Website sudah bisa digunakan ☺️
 `
 
 var tutorialFunction = ctx => {
@@ -145,7 +128,7 @@ bot.command('fitur', fiturFunction)
 
 // ============================ Fitur -> E-Payment ============================
 var epaymentMessage = `
-E-Payment merupakan salah satu fitu kami, fitur ini dapat memudahkan para pengguna dalam melakukan transaksi antarakun, antar bank, dan dapat melakukan pembayaran.
+E-Payment merupakan salah satu fitur kami, fitur ini dapat memudahkan para pengguna dalam melakukan transaksi antar akun, antar bank, dan dapat melakukan pembayaran.
 `
 
 var epaymentFunction = ctx => {
@@ -166,7 +149,7 @@ bot.command('epayment', epaymentFunction)
 
 // ============================ Fitur -> Personal-E ============================
 var personaleMessage = `
-Personal-E merupkan salah satu fitur MyMoney, fitur ini merupakan chatbot yang dapat membantu penggunanya dalam menggunakan atau pengoperasi Website MyMoney
+Personal-E merupakan salah satu fitur MyMoney, fitur ini merupakan chatbot yang dapat membantu penggunanya dalam menggunakan atau mengoperasi Website MyMoney.
 `
 
 var personaleFunction = ctx => {
@@ -198,6 +181,29 @@ var kendalaFunction = ctx => {
 
 bot.action('kendala', kendalaFunction)
 bot.command('kendala', kendalaFunction)
+
+
+// ============================ Error and Text Handling ============================
+var errorMessage = `
+Mohon maaf, kami tidak mengerti perintah Anda.
+Silahkan pilih informasi yang Anda butuhkan.
+`
+
+bot.on('text', ctx => {
+    // If the bot is starting up, any text that user sent will be assumed as their name
+    if (start) {
+        start = false
+        ctx.reply(menuMessage(ctx.message.from.first_name), {
+            reply_markup: mainMenuInline
+        })
+    }
+    // After bot got their name, any unhandled text will be regarded as error
+    else {
+        ctx.reply(errorMessage, {
+            reply_markup: mainMenuInline
+        })
+    }
+})
 
 bot.launch()
 
